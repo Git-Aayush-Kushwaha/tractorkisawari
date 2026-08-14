@@ -14,17 +14,18 @@
         body {
             background-color: #111;
             color: #ffffff; 
-            height: 100vh; 
+            min-height: 100vh; /* Changed to min-height for scrollability */
             display: flex; 
             flex-direction: column; 
-            overflow: hidden;
+            overflow-x: hidden;
+            overflow-y: auto; /* Ensures the page is beautifully scrollable on all devices */
         }
 
         /* --- STATIC BLURRED BACKGROUND --- */
         .bg-blur {
             position: fixed; inset: 0; z-index: -2;
             background: url('image1.jpg') center/cover no-repeat;
-            filter: blur(3px) brightness(0.6);
+            filter: blur(2px) brightness(0.6);
             transform: scale(1.1);
         }
 
@@ -33,7 +34,7 @@
         /* --- TOP NAV BAR --- */
         header {
             position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem;
-            flex-shrink: 0; /* Prevents header from squishing */
+            flex-shrink: 0;
         }
         
         .left-controls { display: flex; align-items: center; gap: 15px; }
@@ -43,6 +44,16 @@
         }
         .fullscreen-btn:hover { transform: scale(1.1); }
         .fullscreen-btn svg { width: 24px; height: 24px; fill: white; }
+
+        /* NEW: Dev Button */
+        .dev-btn {
+            background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff; text-decoration: none; padding: 6px 12px; border-radius: 8px;
+            font-size: 0.9rem; font-family: monospace; font-weight: 700; transition: 0.2s;
+            display: flex; align-items: center; gap: 5px; backdrop-filter: blur(5px);
+        }
+        .dev-btn:hover { background: rgba(255, 255, 255, 0.25); transform: translateY(-2px); }
+        .dev-btn span { color: #22c55e; }
         
         .clock { font-size: 1.2rem; font-weight: 600; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         
@@ -60,11 +71,24 @@
         .pill-btn.red svg { fill: #FF0000; }
         .pill-btn.magenta svg { fill: #E1306C; }
 
+        /* --- TRACTOR SOUND BUTTON (LEFT CENTER) --- */
+        .tractor-btn {
+            position: fixed; left: 0; top: 50%; transform: translateY(-50%);
+            background: rgba(20, 10, 15, 0.8); backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2); border-left: none; border-radius: 0 15px 15px 0;
+            padding: 20px 10px; font-size: 1.1rem; font-family: 'Yatra One', display; cursor: pointer;
+            color: white; z-index: 50; transition: 0.3s;
+            writing-mode: vertical-rl; text-orientation: mixed; /* Keeps it neatly tucked on the side */
+            box-shadow: 4px 0 15px rgba(0,0,0,0.4); letter-spacing: 1px;
+        }
+        .tractor-btn:hover { background: rgba(40, 20, 25, 0.9); padding-right: 15px; }
+        .tractor-btn.playing { background: #22c55e; color: #000; border-color: #16a34a; }
+
         /* --- MAIN CENTER CONTENT --- */
         main { 
             position: relative; z-index: 1; flex-grow: 1; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; padding: 1rem; 
-            overflow-y: auto; /* Allows graceful scrolling on tiny devices */
+            align-items: center; justify-content: center; 
+            padding: 4rem 1rem 14rem 1rem; /* Big bottom padding allows the user to scroll past the fixed player dock */
         }
 
         .live-status {
@@ -73,7 +97,6 @@
         }
         .pulse-dot { width: 8px; height: 8px; background-color: #22c55e; border-radius: 50%; box-shadow: 0 0 10px #22c55e; }
 
-        /* Hero Typography */
         .hero-title {
             font-family: 'Yatra One', display; 
             font-size: 7.5rem; line-height: 1.1; text-align: center;
@@ -84,7 +107,6 @@
             margin-bottom: 2rem; text-shadow: 0 4px 8px rgba(0,0,0,0.8); color: rgba(255,255,255,0.8);
         }
 
-        /* Current Vibe Text */
         .main-vibe-text {
             font-size: 1.2rem; font-weight: 500; color: rgba(255, 255, 255, 0.7);
             text-shadow: 0 4px 15px rgba(255,255,255,0.1); text-transform: uppercase; letter-spacing: 2px;
@@ -92,9 +114,8 @@
 
         /* --- BOTTOM PLAYER DOCK --- */
         .player-wrapper {
-            flex-shrink: 0; /* Prevents player from squishing */
-            margin: 0 auto 20px auto; z-index: 10;
-            width: 90%; max-width: 900px;
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 10;
+            width: 90%; max-width: 900px; flex-shrink: 0;
         }
 
         .switch-vibe-floating {
@@ -133,22 +154,9 @@
         .volume-control { display: flex; align-items: center; justify-content: flex-end; gap: 10px; width: 30%; }
         .volume-control svg { width: 18px; height: 18px; fill: rgba(255,255,255,0.7); }
         
-        input[type=range] { 
-            -webkit-appearance: none; 
-            width: 100px; 
-            background: rgba(255, 255, 255, 0.2); 
-            height: 4px; 
-            border-radius: 2px; 
-            outline: none; 
-        }
+        input[type=range] { -webkit-appearance: none; width: 100px; background: rgba(255, 255, 255, 0.2); height: 4px; border-radius: 2px; outline: none; }
         #progressBar { flex-grow: 1; width: 100%; }
-        input[type=range]::-webkit-slider-thumb { 
-            -webkit-appearance: none; 
-            height: 12px; width: 12px; 
-            border-radius: 50%; 
-            background: #ffffff; 
-            cursor: pointer; 
-        }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%; background: #ffffff; cursor: pointer; }
         input[type=range]::-webkit-slider-runnable-track { -webkit-appearance: none; background: transparent; }
 
         .player-bottom-row { display: flex; align-items: center; gap: 15px; padding: 0 10px; }
@@ -160,27 +168,34 @@
 
         #statusLine { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; z-index: 100; transition: opacity 0.3s; opacity: 0; pointer-events: none; }
 
-        /* --- MOBILE RESPONSIVENESS (PERFECT FIT) --- */
+        /* --- MOBILE RESPONSIVENESS (SCROLLABLE & NO OVERLAPS) --- */
         @media (max-width: 768px) {
             header { padding: 1rem; flex-direction: column; gap: 1rem; }
-            .left-controls { width: 100%; justify-content: center; position: relative; }
-            .fullscreen-btn { position: absolute; left: 0; } /* Keeps icon top-left */
+            .left-controls { width: 100%; justify-content: space-between; } 
+            
             .top-links { flex-wrap: wrap; justify-content: center; gap: 8px; }
             .pill-btn { padding: 6px 12px; font-size: 0.8rem; }
             
+            main { padding: 2rem 1rem 18rem 1rem; } /* Extra bottom padding so mobile users can scroll past the dock */
             .hero-title { font-size: 4.2rem; margin-bottom: 5px; }
             .hero-subtitle { font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 1.5rem; }
-            .main-vibe-text { font-size: 0.9rem; }
+            
+            /* Reposition Tractor button on mobile to be a normal button below the text */
+            .tractor-btn {
+                position: relative; top: auto; left: auto; transform: none;
+                writing-mode: horizontal-tb; flex-direction: row; margin: 20px auto 0;
+                border-radius: 30px; border-left: 1px solid rgba(255, 255, 255, 0.2);
+                padding: 10px 24px; display: inline-flex; font-size: 1rem;
+            }
 
-            .player-wrapper { width: 95%; margin-bottom: 15px; }
-            .switch-vibe-floating { padding: 6px 20px; font-size: 0.85rem; margin-bottom: 12px; }
+            .player-wrapper { width: 95%; bottom: 15px; }
             .player-dock { padding: 15px; border-radius: 25px; }
             
             .player-top-row { flex-wrap: wrap; gap: 12px; justify-content: center; }
             .track-info { width: 100%; justify-content: center; }
             .track-text { text-align: left; }
             
-            .volume-control { display: none; } /* Hidden to save space, physical volume keys work */
+            .volume-control { display: none; }
             .player-controls { width: 100%; justify-content: space-evenly; }
         }
     </style>
@@ -191,11 +206,17 @@
     <div class="overlay"></div>
     <div id="statusLine"></div>
 
+    <!-- Hidden audio element for the tractor engine sound -->
+    <audio id="tractorAudio" src="tractorsound.mp3" loop preload="auto"></audio>
+
     <header>
         <div class="left-controls">
             <button class="fullscreen-btn" id="fullscreenBtn" title="Toggle Full Screen">
                 <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
             </button>
+            <a href="https://aayushkushwaha.netlify.app/" target="_blank" class="dev-btn">
+                <span>&lt; / &gt;</span> Dev
+            </a>
             <div class="clock" id="clockDisplay">10:26 PM</div>
         </div>
         <div class="top-links">
@@ -213,6 +234,11 @@
             </a>
         </div>
     </header>
+
+    <!-- FIXED LEFT TRACTOR SOUND BUTTON -->
+    <button id="tractorSoundBtn" class="tractor-btn">
+        🚜 इंजन शुरू करें
+    </button>
 
     <main>
         <div class="live-status"><span class="pulse-dot"></span> <span id="userCount">500</span> लोग ट्रैक्टर की सवारी कर रहे हैं</div>
@@ -261,7 +287,8 @@
                 <span class="time-text" id="durationTime">0:00</span>
             </div>
         </div>
-        <!-- Set footer name properly per explicit play console brand identity requirement -->
+        
+        <!-- Respecting Play Console Brand Name while honoring explicit user request -->
         <div class="footer-text"><a href="https://instagram.com/4yushkushwaha" target="_blank">आयुष कुशवाहा</a></div>
     </div>
 
@@ -272,6 +299,23 @@
                 document.documentElement.requestFullscreen().catch(err => console.log(err));
             } else {
                 document.exitFullscreen();
+            }
+        });
+
+        // --- TRACTOR AMBIENT SOUND LOGIC ---
+        const tractorAudio = document.getElementById('tractorAudio');
+        tractorAudio.volume = 0.15; // Set to 15% so it's a subtle background engine noise
+
+        const tractorBtn = document.getElementById('tractorSoundBtn');
+        tractorBtn.addEventListener('click', () => {
+            if (tractorAudio.paused) {
+                tractorAudio.play().catch(err => console.log("Audio play blocked by browser", err));
+                tractorBtn.classList.add('playing');
+                tractorBtn.innerHTML = '🚜 इंजन बंद करें';
+            } else {
+                tractorAudio.pause();
+                tractorBtn.classList.remove('playing');
+                tractorBtn.innerHTML = '🚜 इंजन शुरू करें';
             }
         });
 
