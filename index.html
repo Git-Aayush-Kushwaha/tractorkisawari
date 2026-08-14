@@ -25,7 +25,7 @@
         .bg-blur {
             position: fixed; inset: 0; z-index: -2;
             background: url('image1.jpg') center/cover no-repeat;
-            filter: blur(2px) brightness(0.6);
+            filter: blur(15px) brightness(0.6);
             transform: scale(1.1);
         }
 
@@ -171,16 +171,18 @@
         /* --- MOBILE RESPONSIVENESS (SCROLLABLE & NO OVERLAPS) --- */
         @media (max-width: 768px) {
             header { padding: 1rem; flex-direction: column; gap: 1rem; }
-            .left-controls { width: 100%; justify-content: space-between; } 
+            
+            /* UPDATED: Group left controls and push clock to the right */
+            .left-controls { width: 100%; justify-content: flex-start; gap: 15px; } 
+            .clock { margin-left: auto; } /* Automatically pushes the clock to the far right side */
             
             .top-links { flex-wrap: wrap; justify-content: center; gap: 8px; }
             .pill-btn { padding: 6px 12px; font-size: 0.8rem; }
             
-            main { padding: 2rem 1rem 18rem 1rem; } /* Extra bottom padding so mobile users can scroll past the dock */
+            main { padding: 2rem 1rem 18rem 1rem; } 
             .hero-title { font-size: 4.2rem; margin-bottom: 5px; }
             .hero-subtitle { font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 1.5rem; }
             
-            /* Reposition Tractor button on mobile to be a normal button below the text */
             .tractor-btn {
                 position: relative; top: auto; left: auto; transform: none;
                 writing-mode: horizontal-tb; flex-direction: row; margin: 20px auto 0;
@@ -237,7 +239,7 @@
 
     <!-- FIXED LEFT TRACTOR SOUND BUTTON -->
     <button id="tractorSoundBtn" class="tractor-btn">
-        🚜 इंजन शुरू करें
+        🚜 ट्रैक्टर की ध्वनि शुरू करें
     </button>
 
     <main>
@@ -288,8 +290,7 @@
             </div>
         </div>
         
-        <!-- Respecting Play Console Brand Name while honoring explicit user request -->
-        <div class="footer-text"><a href="https://instagram.com/4yushkushwaha" target="_blank">आयुष कुशवाहा</a></div>
+        <div class="footer-text"><a href="https://instagram.com/4yushkushwaha" target="_blank">आयुष कुशवाहा | A23 Studio</a></div>
     </div>
 
     <script>
@@ -302,20 +303,21 @@
             }
         });
 
-        // --- TRACTOR AMBIENT SOUND LOGIC ---
+        // --- TRACTOR AMBIENT SOUND LOGIC (FIXED TOGGLE) ---
         const tractorAudio = document.getElementById('tractorAudio');
-        tractorAudio.volume = 0.15; // Set to 15% so it's a subtle background engine noise
+        tractorAudio.volume = 0.50; // Increased volume slightly so it's easier to hear
 
         const tractorBtn = document.getElementById('tractorSoundBtn');
         tractorBtn.addEventListener('click', () => {
-            if (tractorAudio.paused) {
-                tractorAudio.play().catch(err => console.log("Audio play blocked by browser", err));
-                tractorBtn.classList.add('playing');
-                tractorBtn.innerHTML = '🚜 इंजन बंद करें';
-            } else {
+            // Check the button's class directly instead of the audio state to guarantee the visual toggles
+            if (tractorBtn.classList.contains('playing')) {
                 tractorAudio.pause();
                 tractorBtn.classList.remove('playing');
-                tractorBtn.innerHTML = '🚜 इंजन शुरू करें';
+                tractorBtn.innerHTML = '🚜 ट्रैक्टर की ध्वनि शुरू करें';
+            } else {
+                tractorAudio.play().catch(err => console.log("Audio play blocked by browser or file missing", err));
+                tractorBtn.classList.add('playing');
+                tractorBtn.innerHTML = '🚜 इंजन बंद करें';
             }
         });
 
