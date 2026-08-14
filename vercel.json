@@ -12,6 +12,10 @@
     {
       "src": "*.jpg",
       "use": "@vercel/static"
+    },
+    {
+      "src": "*.mp3",
+      "use": "@vercel/static"
     }
   ],
   "rewrites": [
