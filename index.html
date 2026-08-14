@@ -24,8 +24,8 @@
         .bg-blur {
             position: fixed; inset: 0; z-index: -2;
             background: url('image1.jpg') center/cover no-repeat;
-            filter: blur(15px) brightness(0.6);
-            transform: scale(1.1); /* Scales up slightly to hide white blurred edges */
+            filter: blur(3px) brightness(0.6);
+            transform: scale(1.1);
         }
 
         .overlay { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.2); z-index: -1; }
@@ -33,7 +33,17 @@
         /* --- TOP NAV BAR --- */
         header {
             position: relative; z-index: 1; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem;
+            flex-shrink: 0; /* Prevents header from squishing */
         }
+        
+        .left-controls { display: flex; align-items: center; gap: 15px; }
+        .fullscreen-btn {
+            background: none; border: none; color: white; cursor: pointer;
+            display: flex; align-items: center; transition: transform 0.2s;
+        }
+        .fullscreen-btn:hover { transform: scale(1.1); }
+        .fullscreen-btn svg { width: 24px; height: 24px; fill: white; }
+        
         .clock { font-size: 1.2rem; font-weight: 600; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
         
         .top-links { display: flex; gap: 10px; align-items: center; }
@@ -51,7 +61,11 @@
         .pill-btn.magenta svg { fill: #E1306C; }
 
         /* --- MAIN CENTER CONTENT --- */
-        main { position: relative; z-index: 1; flex-grow: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-bottom: 10rem; }
+        main { 
+            position: relative; z-index: 1; flex-grow: 1; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; padding: 1rem; 
+            overflow-y: auto; /* Allows graceful scrolling on tiny devices */
+        }
 
         .live-status {
             display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 500; color: rgba(255,255,255,0.8);
@@ -67,7 +81,7 @@
         }
         .hero-subtitle {
             font-size: 1.2rem; font-weight: 600; text-transform: uppercase; letter-spacing: 4px;
-            margin-bottom: 2.5rem; text-shadow: 0 4px 8px rgba(0,0,0,0.8); color: rgba(255,255,255,0.8);
+            margin-bottom: 2rem; text-shadow: 0 4px 8px rgba(0,0,0,0.8); color: rgba(255,255,255,0.8);
         }
 
         /* Current Vibe Text */
@@ -78,7 +92,8 @@
 
         /* --- BOTTOM PLAYER DOCK --- */
         .player-wrapper {
-            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%); z-index: 10;
+            flex-shrink: 0; /* Prevents player from squishing */
+            margin: 0 auto 20px auto; z-index: 10;
             width: 90%; max-width: 900px;
         }
 
@@ -86,7 +101,7 @@
             background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.9);
             padding: 8px 30px; border-radius: 30px; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-transform: uppercase; letter-spacing: 1.5px;
-            transition: all 0.3s ease; margin: 0 auto 20px auto; display: block;
+            transition: all 0.3s ease; margin: 0 auto 15px auto; display: block;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
         .switch-vibe-floating:hover {
@@ -145,25 +160,27 @@
 
         #statusLine { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; z-index: 100; transition: opacity 0.3s; opacity: 0; pointer-events: none; }
 
-        /* --- MOBILE RESPONSIVENESS --- */
+        /* --- MOBILE RESPONSIVENESS (PERFECT FIT) --- */
         @media (max-width: 768px) {
             header { padding: 1rem; flex-direction: column; gap: 1rem; }
-            .top-links { flex-wrap: wrap; justify-content: center; }
+            .left-controls { width: 100%; justify-content: center; position: relative; }
+            .fullscreen-btn { position: absolute; left: 0; } /* Keeps icon top-left */
+            .top-links { flex-wrap: wrap; justify-content: center; gap: 8px; }
             .pill-btn { padding: 6px 12px; font-size: 0.8rem; }
             
-            main { padding-bottom: 14rem; }
-            .hero-title { font-size: 4rem; margin-bottom: 5px; }
+            .hero-title { font-size: 4.2rem; margin-bottom: 5px; }
             .hero-subtitle { font-size: 0.9rem; letter-spacing: 2px; margin-bottom: 1.5rem; }
             .main-vibe-text { font-size: 0.9rem; }
 
-            .player-wrapper { width: 95%; bottom: 20px; }
+            .player-wrapper { width: 95%; margin-bottom: 15px; }
+            .switch-vibe-floating { padding: 6px 20px; font-size: 0.85rem; margin-bottom: 12px; }
             .player-dock { padding: 15px; border-radius: 25px; }
             
-            .player-top-row { flex-wrap: wrap; gap: 15px; justify-content: center; }
-            .track-info { width: 100%; justify-content: center; text-align: center; }
-            .track-text { display: flex; flex-direction: column; align-items: center; }
+            .player-top-row { flex-wrap: wrap; gap: 12px; justify-content: center; }
+            .track-info { width: 100%; justify-content: center; }
+            .track-text { text-align: left; }
             
-            .volume-control { display: none; }
+            .volume-control { display: none; } /* Hidden to save space, physical volume keys work */
             .player-controls { width: 100%; justify-content: space-evenly; }
         }
     </style>
@@ -175,7 +192,12 @@
     <div id="statusLine"></div>
 
     <header>
-        <div class="clock" id="clockDisplay">10:26 PM</div>
+        <div class="left-controls">
+            <button class="fullscreen-btn" id="fullscreenBtn" title="Toggle Full Screen">
+                <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+            </button>
+            <div class="clock" id="clockDisplay">10:26 PM</div>
+        </div>
         <div class="top-links">
             <a href="https://open.spotify.com" target="_blank" class="pill-btn green">
                 <svg viewBox="0 0 24 24"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.54.659.3 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15.001 10.62 18.661 12.9c.42.24.6.84.3 1.26zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.18-1.2-.18-1.38-.781-.18-.6.18-1.2.78-1.38 4.2-1.26 11.28-1.02 15.721 1.62.54.3.72 1.02.42 1.56-.24.54-.96.72-1.5.42z"/></svg>
@@ -193,7 +215,7 @@
     </header>
 
     <main>
-        <div class="live-status"><span class="pulse-dot"></span> <span id="userCount">500</span>लोग सवार हैं!</div>
+        <div class="live-status"><span class="pulse-dot"></span> <span id="userCount">500</span> लोग ट्रैक्टर की सवारी कर रहे हैं</div>
         
         <h1 class="hero-title">ट्रैक्टर की सवारी</h1>
         <p class="hero-subtitle">Ride All The Way</p>
@@ -239,10 +261,20 @@
                 <span class="time-text" id="durationTime">0:00</span>
             </div>
         </div>
-        <div class="footer-text"><a href="https://instagram.com/4yushkushwaha" target="_blank">आयुष कुशवाहा</a></div>
+        <!-- Set footer name properly per explicit play console brand identity requirement -->
+        <div class="footer-text"><a href="https://instagram.com/4yushkushwaha" target="_blank">A23 Studio</a></div>
     </div>
 
     <script>
+        // --- FULLSCREEN LOGIC ---
+        document.getElementById('fullscreenBtn').addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
         // --- CLOCK LOGIC ---
         function updateClock() {
             const now = new Date();
@@ -288,7 +320,7 @@
         let currentVibeIndex = 0;
         let currentTrackInfo = null;
         let historyStack = [];
-        let playedTrackIds = new Set(); // NEW: Keeps track of songs that have already played
+        let playedTrackIds = new Set(); 
 
         // DOM Refs
         const songTitle = document.getElementById('songTitle');
@@ -307,7 +339,6 @@
         const statusLine = document.getElementById('statusLine');
         const mainVibeText = document.getElementById('mainVibeText');
 
-        // Set Initial Gradients for sliders
         volumeSlider.style.background = `linear-gradient(to right, #ffffff 50%, rgba(255, 255, 255, 0.2) 50%)`;
         progressBar.style.background = `linear-gradient(to right, #ffffff 0%, rgba(255, 255, 255, 0.2) 0%)`;
 
@@ -328,14 +359,12 @@
             return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
 
-        // --- PROGRESS BAR LOGIC (Dynamically fills white) ---
+        // --- PROGRESS BAR LOGIC ---
         audio.addEventListener('timeupdate', () => {
             if (audio.duration) {
                 const progressPercent = (audio.currentTime / audio.duration) * 100;
                 progressBar.value = progressPercent;
-                
                 progressBar.style.background = `linear-gradient(to right, #ffffff ${progressPercent}%, rgba(255, 255, 255, 0.2) ${progressPercent}%)`;
-                
                 currentTimeEl.textContent = formatTime(audio.currentTime);
                 durationTimeEl.textContent = formatTime(audio.duration);
             }
@@ -363,7 +392,7 @@
         async function initVibe(index) {
             currentVibeIndex = index;
             historyStack = [];
-            playedTrackIds.clear(); // Wipe the memory clean on a new channel
+            playedTrackIds.clear();
             setControlsEnabled(false);
             
             mainVibeText.textContent = `Listening to ${categoryConfig[index].name}`;
@@ -407,20 +436,17 @@
             
             if (currentTrackInfo) {
                 historyStack.push(currentTrackInfo);
-                playedTrackIds.add(currentTrackInfo.id); // Save the current track ID to memory
+                playedTrackIds.add(currentTrackInfo.id); 
             }
 
-            // Filter the tracks array to only include songs that are NOT in the memory
             let unplayedTracks = tracks.filter(track => !playedTrackIds.has(track.id));
 
-            // If the user has listened to every single track in the list, reset the memory
             if (unplayedTracks.length === 0) {
                 playedTrackIds.clear();
-                if (currentTrackInfo) playedTrackIds.add(currentTrackInfo.id); // Add current track so it doesn't repeat instantly
+                if (currentTrackInfo) playedTrackIds.add(currentTrackInfo.id);
                 unplayedTracks = tracks.filter(track => !playedTrackIds.has(track.id));
             }
 
-            // Pick randomly from the remaining unplayed tracks
             currentTrackInfo = unplayedTracks[Math.floor(Math.random() * unplayedTracks.length)];
             loadAndPlayTrack(isUserAction);
         }
@@ -428,118 +454,10 @@
         function playPrevious() {
             if (historyStack.length === 0) return;
             
-            // Allow the track we are skipping backward from to play again in the future
             if (currentTrackInfo) {
                 playedTrackIds.delete(currentTrackInfo.id);
             }
             
-            currentTrackInfo = historyStack.pop();
-            loadAndPlayTrack(true);
-        }
-
-        // Set Initial Gradients for sliders
-        volumeSlider.style.background = `linear-gradient(to right, #ffffff 50%, rgba(255, 255, 255, 0.2) 50%)`;
-        progressBar.style.background = `linear-gradient(to right, #ffffff 0%, rgba(255, 255, 255, 0.2) 0%)`;
-
-        function showStatus(msg) {
-            if(!msg) { statusLine.style.opacity = 0; return; }
-            statusLine.textContent = msg;
-            statusLine.style.opacity = 1;
-        }
-
-        function setControlsEnabled(enabled) {
-            [prevBtn, nextBtn, switchBtn, playPauseBtn, progressBar].forEach(b => b.disabled = !enabled);
-        }
-
-        function formatTime(seconds) {
-            if (isNaN(seconds)) return "0:00";
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
-        }
-
-        // --- PROGRESS BAR LOGIC (Dynamically fills white) ---
-        audio.addEventListener('timeupdate', () => {
-            if (audio.duration) {
-                const progressPercent = (audio.currentTime / audio.duration) * 100;
-                progressBar.value = progressPercent;
-                
-                progressBar.style.background = `linear-gradient(to right, #ffffff ${progressPercent}%, rgba(255, 255, 255, 0.2) ${progressPercent}%)`;
-                
-                currentTimeEl.textContent = formatTime(audio.currentTime);
-                durationTimeEl.textContent = formatTime(audio.duration);
-            }
-        });
-
-        audio.addEventListener('loadedmetadata', () => {
-            durationTimeEl.textContent = formatTime(audio.duration);
-        });
-
-        progressBar.addEventListener('input', (e) => {
-            if (audio.duration) {
-                const seekTime = (e.target.value / 100) * audio.duration;
-                audio.currentTime = seekTime;
-                progressBar.style.background = `linear-gradient(to right, #ffffff ${e.target.value}%, rgba(255, 255, 255, 0.2) ${e.target.value}%)`;
-            }
-        });
-
-        volumeSlider.addEventListener('input', (e) => { 
-            audio.volume = e.target.value; 
-            const volPercent = e.target.value * 100;
-            volumeSlider.style.background = `linear-gradient(to right, #ffffff ${volPercent}%, rgba(255, 255, 255, 0.2) ${volPercent}%)`;
-        });
-
-        // --- PLAYBACK LOGIC ---
-        async function initVibe(index) {
-            currentVibeIndex = index;
-            historyStack = [];
-            setControlsEnabled(false);
-            
-            mainVibeText.textContent = `Listening to ${categoryConfig[index].name}`;
-            showStatus(`Tuning into ${categoryConfig[index].name}…`);
-
-            const tracks = await fetchCategoryTracks(index);
-            if(tracks.length > 0) {
-                currentTrackInfo = tracks[Math.floor(Math.random() * tracks.length)];
-                loadAndPlayTrack(false);
-            }
-            
-            showStatus("");
-            setControlsEnabled(true);
-        }
-
-        function loadAndPlayTrack(isUserAction = true) {
-            songTitle.textContent = currentTrackInfo.title;
-            artistName.textContent = currentTrackInfo.artist;
-            albumArt.src = currentTrackInfo.image || "https://images.unsplash.com/photo-1614613535308-eb5fbd3d2c17?q=80&w=200&auto=format&fit=crop";
-            
-            audio.src = currentTrackInfo.url;
-            progressBar.value = 0;
-            progressBar.style.background = `linear-gradient(to right, #ffffff 0%, rgba(255, 255, 255, 0.2) 0%)`;
-            currentTimeEl.textContent = "0:00";
-
-            if (isUserAction) {
-                showStatus("Buffering...");
-                audio.play().then(() => {
-                    playIcon.style.display = 'none';
-                    pauseIcon.style.display = 'block';
-                    showStatus(""); 
-                }).catch(e => {
-                    showStatus("Skipping broken track...");
-                    setTimeout(() => playNextShuffle(true), 1500);
-                });
-            }
-        }
-
-        async function playNextShuffle(isUserAction = true) {
-            const tracks = await fetchCategoryTracks(currentVibeIndex);
-            if (currentTrackInfo) historyStack.push(currentTrackInfo);
-            currentTrackInfo = tracks[Math.floor(Math.random() * tracks.length)];
-            loadAndPlayTrack(isUserAction);
-        }
-
-        function playPrevious() {
-            if (historyStack.length === 0) return;
             currentTrackInfo = historyStack.pop();
             loadAndPlayTrack(true);
         }
